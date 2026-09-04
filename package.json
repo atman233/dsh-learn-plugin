@@ -1,0 +1,43 @@
+{
+  "name": "dsh-learn-plugin",
+  "version": "0.1.0",
+  "description": "DSH 学习插件：一句话生成学习规划，每日生成 Amanda Askell 寓言式图文课程。注册 /learn /learn-next /learn-review 三条命令。",
+  "type": "module",
+  "main": "src/index.mjs",
+  "bin": {
+    "dsh-learn": "scripts/cli.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_GITHUB_USERNAME/dsh-learn-plugin.git"
+  },
+  "scripts": {
+    "setup": "node scripts/cli.mjs",
+    "update": "node scripts/cli.mjs update",
+    "remove": "node scripts/cli.mjs remove"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "skills",
+    "scripts",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@deepseek-ai/cordis": "4.0.2",
+    "@deepseek-ai/dsh-llm": "0.1.2-rc.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "license": "MIT"
+}
