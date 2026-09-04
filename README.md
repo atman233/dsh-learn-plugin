@@ -23,11 +23,13 @@ learn-review：渐进式测验（回忆→应用→挑错→反向费曼）→ �
 理解的标准不是复述定义，而是能把定义还原回故事。完整方法论见
 `skills/learn-plan/references/method.md`。
 
-> **宿主依赖契约**：插件刻意不引入 `@deepseek-ai/cordis`（cordis 内核必须与
-> DSH 运行时是同一实例，对象插件形态 `{ inject, apply }` 天然满足）；
-> `@deepseek-ai/dsh-llm` 仅以 peerDependency 声明（只用其中的纯工厂
-> `createUserMessage`），由包管理器安装、且版本精确对齐当前 DSH 版本。
-> DSH 升级后请同步 bump 该 peer 版本并重跑一条命令安装。
+> **宿主依赖契约（不遮蔽 DSH 共享宿主包）**：插件包**不携带任何 `@deepseek-ai/*` 副本**。
+> - 不 import `@deepseek-ai/cordis`：cordis 内核必须与 DSH 运行时同一实例，
+>   cordis 原生支持的对象插件形态 `{ inject, apply }` 天然满足；
+> - `@deepseek-ai/dsh-llm` 仅声明为 **optional peerDependency**（版本对齐当前
+>   DSH 版本，只用其中的纯工厂 `createUserMessage`），运行时懒加载：
+>   常规解析失败时自动回退到 DSH CLI 全局安装自带的宿主副本。
+> - DSH 升级后请同步 bump peer 版本约束并重跑一条命令安装。
 
 ## 组成
 
