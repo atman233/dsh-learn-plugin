@@ -88,6 +88,25 @@ git push -u origin main
 `package.json` 的 `repository` 字段，通过 `dsh plugin --profile <name> add
 github:atman233/dsh-learn-plugin` 安装 DSH 插件，并从仓库刷新三个 skill。
 
+### 无法直连 github.com 的机器（重要）
+
+`dsh plugin add github:...` 会用两条通道访问 GitHub，都需要能通：
+pnpm 自身的 HTTP（读 `.npmrc` 代理）和 git CLI 的 `ls-remote`（读 git 代理配置）。
+在这类机器上做一次性配置：
+
+```bash
+# 1) profile 级 .npmrc（$DSH_HOME/profiles/<profile名>/.npmrc）
+proxy=http://127.0.0.1:7897
+https-proxy=http://127.0.0.1:7897
+
+# 2) git 仅针对 github.com 的代理（不影响其他 git 用途）
+git config --global http.https://github.com/.proxy http://127.0.0.1:7897
+```
+
+缺第 2 条时会出现"插件更新失败且无法回滚"的现象：pnpm 已经装了新代码，
+但 lockfile 解析（走 git）失败，状态不一致。遇到时可 `pnpm update dsh-learn-plugin`
+在配置好代理后重跑一次即可对齐。
+
 ## 日常使用
 
 | 你说 | 发生什么 |
