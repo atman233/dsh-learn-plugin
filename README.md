@@ -23,6 +23,12 @@ learn-review：渐进式测验（回忆→应用→挑错→反向费曼）→ �
 理解的标准不是复述定义，而是能把定义还原回故事。完整方法论见
 `skills/learn-plan/references/method.md`。
 
+> **宿主依赖契约**：插件刻意不引入 `@deepseek-ai/cordis`（cordis 内核必须与
+> DSH 运行时是同一实例，对象插件形态 `{ inject, apply }` 天然满足）；
+> `@deepseek-ai/dsh-llm` 仅以 peerDependency 声明（只用其中的纯工厂
+> `createUserMessage`），由包管理器安装、且版本精确对齐当前 DSH 版本。
+> DSH 升级后请同步 bump 该 peer 版本并重跑一条命令安装。
+
 ## 组成
 
 | 部分 | 内容 | 生效范围 |
