@@ -5,19 +5,58 @@
  * learn-review）执行。命令本身不做业务逻辑：handler 通过 agent.steer 提交
  * 一条模型可见的用户消息，由模型按 skill 流程完成规划 / 课程 / 复习。
  *
- * 刻意不 import @deepseek-ai/cordis（用 cordis 原生支持的对象插件形态
- * { inject, apply }），避免插件自带的 cordis 副本与 DSH 运行时内核的
- * symbol 不一致问题；@deepseek-ai/dsh-llm 只用到纯工厂 createUserMessage。
+ * 宿主依赖策略（刻意为之，避免遮蔽 DSH 共享宿主包）：
+ * - 不 import @deepseek-ai/cordis：cordis 内核必须与 DSH 运行时同一实例，
+ *   cordis 原生支持的对象插件形态 { inject, apply } 天然满足；
+ * - @deepseek-ai/dsh-llm 仅声明为 optional peerDependency，运行时按
+ *   「常规解析 → 宿主 DSH CLI 安装目录」顺序懒加载（只用其中的纯工厂
+ *   createUserMessage），插件包自身不携带任何 @deepseek-ai 副本。
  */
-import { createUserMessage } from "@deepseek-ai/dsh-llm";
+import { exec } from "node:child_process";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
+import { promisify } from "node:util";
 
-/** steer 一条用户消息给 agent，并返回命令成功结果。 */
-function submit(agent, text, ack) {
-	agent.steer(createUserMessage({
-		content: [{ type: "text", text }],
-		source: { kind: "user" },
-	}));
-	return { kind: "success", text: ack };
+const execAsync = promisify(exec);
+
+let llmPromise;
+/** 懒加载 dsh-llm：常规解析失败时回退到宿主 DSH CLI 自带的副本。 */
+function loadLlm() {
+	if (!llmPromise) {
+		llmPromise = (async () => {
+			try {
+				return await import("@deepseek-ai/dsh-llm");
+			} catch {}
+			// 常规解析失败（例如 profile 的 autoInstallPeers=false 且无人提升该包）：
+			// 定位全局 npm 目录下 DSH CLI 自带的宿主副本。
+			const root = (await execAsync("npm root -g")).stdout.trim();
+			const candidates = [
+				join(root, "@deepseek-ai", "dsh", "node_modules", "@deepseek-ai", "dsh-llm", "lib", "index.js"),
+				join(root, "@deepseek-ai", "dsh-llm", "lib", "index.js"),
+			];
+			for (const file of candidates) {
+				if (existsSync(file)) return import(pathToFileURL(file).href);
+			}
+			llmPromise = undefined;
+			throw new Error("无法加载 @deepseek-ai/dsh-llm（常规解析与 DSH 全局安装目录均未找到）");
+		})();
+	}
+	return llmPromise;
+}
+
+/** steer 一条用户消息给 agent，并返回命令结果。 */
+async function submit(agent, text, ack) {
+	try {
+		const { createUserMessage } = await loadLlm();
+		agent.steer(createUserMessage({
+			content: [{ type: "text", text }],
+			source: { kind: "user" },
+		}));
+		return { kind: "success", text: ack };
+	} catch (error) {
+		return { kind: "error", text: `${error.message}。请先安装 dsh-learn-plugin 的依赖（npm install）或确认 dsh 已通过 npm 全局安装。` };
+	}
 }
 
 const DshLearn = {

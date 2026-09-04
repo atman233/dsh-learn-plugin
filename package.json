@@ -33,6 +33,14 @@
   "peerDependencies": {
     "@deepseek-ai/dsh-llm": "0.1.2-rc.1"
   },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-llm": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-llm": "0.1.2-rc.1"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
