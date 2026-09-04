@@ -34,11 +34,10 @@ learn-review：渐进式测验（回忆→应用→挑错→反向费曼）→ �
 
 ### 方式一：推到 GitHub 后（推荐）
 
-先把本仓库推到 GitHub（见下文"发布到 GitHub"），然后把 README 和 `package.json`
-里的 `YOUR_GITHUB_USERNAME` 换成你的用户名。之后任何一台机器上一条命令即可：
+先把本仓库推到 GitHub（见下文"发布到 GitHub"）。之后任何一台机器上一条命令即可：
 
 ```bash
-npx github:<你的用户名>/dsh-learn-plugin
+npx github:atman233/dsh-learn-plugin
 ```
 
 以后想更新到最新版，重跑同一条命令即可（会拉取仓库最新代码并重装）。
@@ -67,21 +66,19 @@ npm run setup        # 等价于 node scripts/cli.mjs
 ### 卸载
 
 ```bash
-npx github:<你的用户名>/dsh-learn-plugin remove    # 或本地 npm run remove
+npx github:atman233/dsh-learn-plugin remove    # 或本地 npm run remove
 ```
 
 ## 发布到 GitHub
 
 ```bash
 cd dsh-learn-plugin
-# 1. 把 package.json 的 repository.url 和 README 中的 YOUR_GITHUB_USERNAME 换成你的用户名
-git remote add origin git@github.com:<你的用户名>/dsh-learn-plugin.git
 git push -u origin main
 ```
 
-推送后 `npx github:<你的用户名>/dsh-learn-plugin` 即全局可用——CLI 会自动读取
+推送后 `npx github:atman233/dsh-learn-plugin` 即全局可用——CLI 会自动读取
 `package.json` 的 `repository` 字段，通过 `dsh plugin --profile <name> add
-github:<用户名>/dsh-learn-plugin` 安装 DSH 插件，并从仓库刷新三个 skill。
+github:atman233/dsh-learn-plugin` 安装 DSH 插件，并从仓库刷新三个 skill。
 
 ## 日常使用
 
