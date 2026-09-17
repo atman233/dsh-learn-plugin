@@ -1,0 +1,15 @@
+{
+  "name": "dsh-learn-plugin",
+  "version": "0.1.0",
+  "description": "AI 学习插件：一句话生成学习规划，每日生成 Amanda Askell 寓言式图文课程（learn-plan / learn-lesson / learn-review）。",
+  "description_i18n": {
+    "en": "AI learning plugin: one-sentence study plans and daily fable-style illustrated lessons (learn-plan / learn-lesson / learn-review).",
+    "zh-CN": "AI 学习插件：一句话生成学习规划，每日生成 Amanda Askell 寓言式图文课程（learn-plan / learn-lesson / learn-review）。"
+  },
+  "author": {
+    "name": "atman233"
+  },
+  "license": "MIT",
+  "skills": "skills",
+  "commands": "commands"
+}

@@ -1,6 +1,6 @@
 # dsh-learn-plugin
 
-基于 DeepSeek Harness（DSH，dsh-v0.1.2-rc.1）的一整套学习插件：**一句话生成学习规划，每天生成一篇 Amanda Askell 寓言式的图文学习资料。**
+AI 学习插件（**以 ZCode 为主**，兼容 DSH）：**一句话生成学习规划，每天生成一篇 Amanda Askell 寓言式的图文学习资料。**
 
 ```
 "我想学 Transformer 的注意力机制"        ← 你只需要一句话
@@ -35,10 +35,12 @@ learn-review：渐进式测验（回忆→应用→挑错→反向费曼）→ �
 
 | 部分 | 内容 | 生效范围 |
 |------|------|----------|
-| `skills/` | learn-plan / learn-lesson / learn-review 三个 skill | DSH 与 ZCode（都扫描 `~/.agents/skills` 与项目 `.agents/skills`） |
-| `package.json` + `cordis.patch.yml` + `src/index.mjs` | DSH bundle，注册 `/learn` `/learn-next` `/learn-review` 三条斜杠命令 | 仅 DSH |
+| `skills/` | learn-plan / learn-lesson / learn-review 三个 skill | ZCode 与 DSH（都扫描 `~/.agents/skills` 与项目 `.agents/skills`） |
+| `commands/*.md` | `/learn` `/learn-next` `/learn-review` 三条斜杠命令 | ZCode 与 DSH（markdown 命令，`~/.agents/commands/`） |
+| `.zcode-plugin/plugin.json` | ZCode 插件清单（可从本地目录/GitHub 作为插件整体安装） | ZCode |
+| `package.json` + `cordis.patch.yml` + `src/index.mjs` | DSH bundle（可选，注册同名斜杠命令） | 仅 DSH |
 
-## 安装（一条命令，skills + 插件全装好）
+## 安装（一条命令，skills + 命令 + 插件全装好）
 
 ### 方式一：推到 GitHub 后（推荐）
 
@@ -61,15 +63,16 @@ npm run setup        # 等价于 node scripts/cli.mjs
 
 | 命令 | 作用 |
 |------|------|
-| `dsh-learn` / `npm run setup` | 安装或更新：skills → `~/.agents/skills/`，插件 → DSH profile |
-| `dsh-learn --skills-only` | 只装 skills（ZCode、无 DSH 环境） |
-| `dsh-learn --project` | skills 装到当前项目 `.agents/skills/` 而非用户级 |
+| `dsh-learn` / `npm run setup` | 安装或更新：skills → `~/.agents/skills/`，命令 → `~/.agents/commands/`，DSH 插件 → profile |
+| `dsh-learn --skills-only` | 只装 skills + 斜杠命令（**纯 ZCode 用户推荐**，不碰 DSH） |
+| `dsh-learn --no-commands` | 不装斜杠命令（只靠自然语言触发 skill） |
+| `dsh-learn --project` | skills/命令装到当前项目 `.agents/` 而非用户级 |
 | `dsh-learn --profile <名称>` | 指定 DSH profile（缺省自动选 `desktop`，多个 profile 时提示） |
-| `dsh-learn --source <路径或spec>` | 手动指定插件来源（本地开发时用本地路径调试） |
-| `dsh-learn remove` / `npm run remove` | 卸载 skills + 插件 |
+| `dsh-learn --source <路径或spec>` | 手动指定 DSH 插件来源（本地开发时用本地路径调试） |
+| `dsh-learn remove` / `npm run remove` | 卸载全部 |
 
-技能安装后同时被 DSH 与 ZCode 发现；DSH 插件（斜杠命令）只在 DSH 生效，
-未检测到 `dsh` 命令时自动跳过、不影响 skills 安装。
+skills 与命令装在 `~/.agents/` 下，ZCode 与 DSH 都能发现；DSH bundle 是可选的
+第二入口，未检测到 `dsh` 命令时自动跳过、不影响 ZCode 使用。
 
 ### 卸载
 
@@ -107,7 +110,9 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 但 lockfile 解析（走 git）失败，状态不一致。遇到时可 `pnpm update dsh-learn-plugin`
 在配置好代理后重跑一次即可对齐。
 
-## 日常使用
+## 日常使用（ZCode）
+
+斜杠命令（`~/.agents/commands/`）和自然语言触发都可以：
 
 | 你说 | 发生什么 |
 |------|----------|
